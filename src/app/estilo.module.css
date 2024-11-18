@@ -1,0 +1,13 @@
+.background {
+  height: 100vh;
+  background-image: url("./../../public/background3.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  /* width: 100vw;  */
+  /* display: flex; 
+     align-items: center;
+    justify-content: center; */
+}

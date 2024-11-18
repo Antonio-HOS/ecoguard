@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import styles from "./estilo.module.css";
+
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,13 +29,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+              <PrimeReactProvider>
+
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} background ${styles.background}`}
       >
         <main>
         {children}
         </main>
       </body>
+      </PrimeReactProvider>
     </html>
   );
 }
