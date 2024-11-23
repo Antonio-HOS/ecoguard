@@ -42,7 +42,7 @@ interface CardProps {
 export function CardHome(props: CardProps) {
   
 const chartConfig = {
-  desktop: {
+  dado1: {
     label: props.chartConfig,
     color: props.chartColor,
   },
@@ -83,9 +83,9 @@ const chartConfig = {
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="dado1"
               type="natural"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-dado1)"
               strokeWidth={2}
               dot={({ cx, cy, payload }) => {
                 const r = 24
@@ -97,7 +97,7 @@ const chartConfig = {
                     width={r}
                     height={r}
                     fill="hsl(var(--background))"
-                    stroke="var(--color-desktop)"
+                    stroke="var(--color-dado1)"
                   />
                 )
               }}

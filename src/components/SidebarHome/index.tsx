@@ -52,7 +52,7 @@ export default function Sidebar() {
           <li className="flex justify-center">
             <Link href="/" className="w-[80px] h-[80px] group">
               <div
-                className={`relative w-full h-full  transition-transform duration-00 ${isOpenLogo}`}
+                className={`relative w-full h-full  transition-transform duration-400 ${isOpenLogo}`}
               >
                 <Image
                   src="/ecoguard.png"
