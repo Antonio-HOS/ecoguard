@@ -72,34 +72,43 @@ const chartConfig = {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="createdAt"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => {
+                // Ajuste na formatação da data
+                const date = new Date(value);
+                return date.toLocaleDateString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                });
+              }}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="dado1"
+              dataKey="dado"
               type="natural"
               stroke="var(--color-dado1)"
               strokeWidth={2}
               dot={({ cx, cy, payload }) => {
-                const r = 24
+                const r = 24;
+                // Garantir que a chave seja única
+                const key = payload.createdAt || payload.month; // Ajuste para garantir chave única
                 return (
                   <GitCommitVertical
-                    key={payload.month}
+                    key={key}  // Usar a chave única
                     x={cx - r / 2}
                     y={cy - r / 2}
                     width={r}
                     height={r}
                     fill="hsl(var(--background))"
-                    stroke="var(--color-dado1)"
+                    stroke="hsl(var(--chart-2))"
                   />
-                )
+                );
               }}
             />
           </LineChart>

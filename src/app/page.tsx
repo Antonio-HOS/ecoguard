@@ -7,12 +7,50 @@ import { Droplets, Wind, Sprout } from "lucide-react";
 import { ChartData } from "@/components/chartData";
 import { DenunciaForm } from "@/components/DenunciaForm";
 import { useState, useEffect } from "react";
+import { get } from "../../services/api";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(true);
   const [dataAgua, setDataAgua] = useState<any>();
   const [dataSolo, setDataSolo] = useState<any>();
   const [dataAr, setDataAr] = useState<any>();
+
+  const [dadosApiAr, setDadosApiAr] = useState<any[]>([]);
+  const [dadosApiSolo, setDadosApiSolo] = useState<any[]>([]);
+  const [dadosApiAgua, setDadosApiAgua] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Função para carregar os produtos
+    const fetchProdutos = async () => {
+      try {
+        const token = "seu-token-aqui"; // Caso seja necessário um token de autenticação
+        const dataAgua = await get("/aguas", token); // Faz a requisição GET
+        setDadosApiAgua(dataAgua.aguas); // Atualiza o estado com os dados da resposta
+
+        const dataSolo = await get("/solos", token); // Faz a requisição GET
+        setDadosApiSolo(dataSolo.solos); // Atualiza o estado com os dados da resposta
+
+        const dataAr = await get("/ares", token); // Faz a requisição GET
+        setDadosApiAr(dataAr.ares); // Atualiza o estado com os dados da resposta
+
+        console.log("Agua");
+        console.log(dataAgua.aguas);
+        console.log("solo");
+        console.log(dataSolo.solos);
+        console.log("ares");
+        console.log(dataAr.ares);
+      } catch (err) {
+        setError("Erro ao carregar os produtos");
+        console.error(err);
+      } finally {
+        setLoading(true); // Finaliza o estado de carregamento
+      }
+    };
+
+    fetchProdutos();
+  }, []);
 
   useEffect(() => {
     setDataAgua([
@@ -66,42 +104,50 @@ export default function Home() {
       </div>
       {isVisible! && <div className="h-20 flex "></div>}
       <section className="ml-20 flex flex-wrap justify-center pt-6 space-x-14">
-        <CardHome
-          chartConfig={"IPC"}
-          chartColor="hsl(var(--chart-3))"
-          chartData={dataAgua}
-          title="Indice de qualidade da água"
-          icon={<Droplets size={32} />}
-          bgColor="bg-blue-100"
-          dado1="1,3"
-          descricao="Qualidade da água dos rios gravada nos últimos meses"
-          descricao2="Trending up by 5.2% this month"
-          descricao3="Showing total visitors for the last 6 months"
-        />
-        <CardHome
-          chartConfig={"solo"}
-          chartColor="hsl(var(--chart-1))"
-          chartData={dataAr}
-          title="Qualidade do ar"
-          icon={<Wind size={32} />}
-          bgColor="bg-orange-100"
-          dado1="1,3"
-          descricao="Index da qualidade do ar gravado nos últimos meses"
-          descricao2="Trending up by 5.2% this month"
-          descricao3="Showing total visitors for the last 6 months"
-        />
-        <CardHome
-          chartConfig={"Solo"}
-          chartColor="hsl(var(--chart-2))"
-          chartData={dataSolo}
-          title="Qualidade do solo"
-          icon={<Sprout size={32} />}
-          bgColor="bg-green-100"
-          dado1="1,3"
-          descricao="Quantidade de residuos encontrados no solo da região dos ultimos meses"
-          descricao2="Trending up by 5.2% this month"
-          descricao3="Showing total visitors for the last 6 months"
-        />
+        {dadosApiAgua && dadosApiAgua.length > 0 && (
+          <CardHome
+            chartConfig={"IPC"}
+            chartColor="hsl(var(--chart-2))"
+            chartData={dadosApiAgua}
+            title="Indice de qualidade da água"
+            icon={<Droplets size={32} />}
+            bgColor="bg-blue-100"
+            dado1="1,3"
+            descricao="Qualidade da água dos rios gravada nos últimos meses"
+            descricao2="Trending up by 5.2% this month"
+            descricao3="Showing total visitors for the last 6 months"
+          />
+        )}
+
+        {dadosApiAr && dadosApiAr.length > 0 && (
+          <CardHome
+            chartConfig={"solo"}
+            chartColor="hsl(var(--chart-2))"
+            chartData={dadosApiAr}
+            title="Qualidade do ar"
+            icon={<Wind size={32} />}
+            bgColor="bg-orange-100"
+            dado1="1,3"
+            descricao="Index da qualidade do ar gravado nos últimos meses"
+            descricao2="Trending up by 5.2% this month"
+            descricao3="Showing total visitors for the last 6 months"
+          />
+        )}
+
+        {dadosApiSolo && dadosApiSolo.length > 0 && (
+          <CardHome
+            chartConfig={"Solo"}
+            chartColor="hsl(var(--chart-2))"
+            chartData={dadosApiSolo}
+            title="Qualidade do solo"
+            icon={<Sprout size={32} />}
+            bgColor="bg-green-100"
+            dado1="1,3"
+            descricao="Quantidade de residuos encontrados no solo da região dos ultimos meses"
+            descricao2="Trending up by 5.2% this month"
+            descricao3="Showing total visitors for the last 6 months"
+          />
+        )}
       </section>
       <section className="flex justify-center ml-20 space-x-11 mt-5">
         <div className="w-[55%]">

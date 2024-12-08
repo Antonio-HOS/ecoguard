@@ -8,7 +8,7 @@ import { ChartData } from "@/components/chartData";
 import { DenunciaForm } from "@/components/DenunciaForm";
 import { useEffect, useState } from "react";
 import { CardPages } from "@/components/cardPages";
-
+import { get } from "../../../../services/api";
 const data = [
   {
     praia: "Praia dos milionários",
@@ -97,6 +97,29 @@ const data = [
 ];
 
 export default function Agua() {
+  const [dadosApi, setDadosApi] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Função para carregar os produtos
+    const fetchProdutos = async () => {
+      try {
+        const token = "seu-token-aqui"; // Caso seja necessário um token de autenticação
+        const data = await get("/aguas", token); // Faz a requisição GET
+        setDadosApi(data.aguas); // Atualiza o estado com os dados da resposta
+        console.log(data.aguas);
+      } catch (err) {
+        setError("Erro ao carregar os produtos");
+        console.error(err);
+      } finally {
+        setLoading(true); // Finaliza o estado de carregamento
+      }
+    };
+
+    fetchProdutos();
+  }, []);
+
   const [local, setLocal] = useState<string>();
   useEffect(() => {
     setLocal("Ilhéus-Ba");
@@ -108,45 +131,60 @@ export default function Agua() {
       <div className="flex justify-center items-center space-x-4 bg-[#ffffffe3] py-5">
         <Droplets size={35} />
         <h1 className="text-3xl">Dados sobre as águas - {local}</h1>
-        <MapPin size={32} color="red"/>
+        <MapPin size={32} color="red" />
       </div>
       <section className="ml-20 flex  justify-evenly pt-6 ">
         <div className="w-[40%] pl-10 p-4 rounded-2xl h-[80vh] hover:shadow-2xl hover:scale-105 transition-all duration-500 bg-[rgba(255,255,255,0.78)] overflow-y-auto">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "16px",
-                borderBottom: "1px solid #ccc",
-                paddingBottom: "8px",
-              }}
-            >
-              <h3>{item.praia}</h3>
-              <p>
-                <strong>Local:</strong> {item.local}
-              </p>
-              <p>
-                <strong>Data:</strong> {item.data}
-              </p>
-              <p
+          {!loading && (
+            <div className="flex justify-center mt-10 text-3xl items-center">
+              <h1>carregando...</h1>
+            </div>
+          )}
+          {dadosApi?.length ? (
+            dadosApi.map((item, index) => (
+              <div
+                key={index}
                 style={{
-                  color: item.tipo === "ICA" ? "green" : "red",
+                  marginBottom: "16px",
+                  borderBottom: "1px solid #ccc",
+                  paddingBottom: "8px",
                 }}
               >
-                <strong>{item.tipo}:</strong> {item.valor}
-              </p>
-            </div>
-          ))}
+                <h3>{item.regiao}</h3>
+                <p>
+                  <strong>Local:</strong> {item.cidade}
+                </p>
+                <p>
+                  <strong>Data:</strong> {item.createdAt.slice(0, 10)}
+                </p>
+                <p
+                  style={{
+                    color: item.tipo === "ICA" ? "green" : "red",
+                  }}
+                >
+                  <strong>{item.tipo}:</strong> {item.dado}
+                </p>
+                <p>
+                  <strong>Comentario:</strong> {item.comentario}
+                </p>
+              </div>
+            ))
+          ) : (
+            <h1 className="flex justify-center text-2xl">Nenhum dado cadastrado...</h1>
+
+          )}
         </div>
-        <CardPages
-          title="Indice de qualidade da água"
-          icon={<Droplets size={32} />}
-          bgColor="bg-[rgba(96,115,255,0.3)] hover:bg-[rgba(96,115,255,0.7)] transition-all duration-500"
-          dado1="1,3"
-          descricao="Qualidade da água dos rios gravada nos últimos meses"
-          descricao2="Aqualidade caiu em 5.2% no último mês"
-          descricao3="A tabela mostra os dados coletados no últimos 6 meses"
-        />
+        {dadosApi && (
+          <CardPages
+            title="Indice de qualidade da água"
+            icon={<Droplets size={32} />}
+            bgColor="bg-[rgba(96,115,255,0.3)] hover:bg-[rgba(96,115,255,0.7)] transition-all duration-500"
+            dado1={dadosApi}
+            descricao="Qualidade da água dos rios gravada nos últimos meses"
+            descricao2={`Ultima qualidade da água:${dadosApi[0]?.tipo}: ${dadosApi[0]?.dado}`}
+            descricao3="A tabela mostra os dados coletados nos últimos meses"
+          />
+        )}
       </section>
     </div>
   );

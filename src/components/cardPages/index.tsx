@@ -18,12 +18,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { month: "January", dado1: 186, dado2: 80 },
+  { month: "February", dado1: 305, dado2: 200 },
+  { month: "March", dado1: 237, dado2: 120 },
+  { month: "April", dado1: 73, dado2: 190 },
+  { month: "May", dado1: 209, dado2: 130 },
+  { month: "June", dado1: 214, dado2: 140 },
 ];
 interface CardProps {
   title: string;
@@ -31,18 +31,18 @@ interface CardProps {
   descricao?: string;
   descricao2?: string;
   descricao3?: string;
-  dado1?: string;
+  dado1?: any[];
   dado2?: number[];
   bgColor?: string;
 }
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "dado1",
     color: "hsl(var(--chart-3))",
   },
   mobile: {
-    label: "Mobile",
+    label: "dado2",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
@@ -65,7 +65,7 @@ export function CardPages(props: CardProps) {
         <ChartContainer config={chartConfig} className="bg-white w-[95%]">
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={props.dado1}
             margin={{
               left: 12,
               right: 12,
@@ -75,26 +75,36 @@ export function CardPages(props: CardProps) {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="createdAt"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => {
+                // Ajuste na formatação da data
+                const date = new Date(value);
+                return date.toLocaleDateString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                });
+              }}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="dado"
+              name={props.dado1?.[0]?.tipo}
               type="natural"
               stroke="var(--color-desktop)"
               strokeWidth={2}
               dot={({ cx, cy, payload }) => {
                 const r = 24;
+                // Garantir que a chave seja única
+                const key = payload.createdAt || payload.month; // Ajuste para garantir chave única
                 return (
                   <GitCommitVertical
-                    key={payload.month}
+                    key={key} // Usar a chave única
                     x={cx - r / 2}
                     y={cy - r / 2}
                     width={r}
