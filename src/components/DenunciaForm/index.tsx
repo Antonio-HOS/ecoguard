@@ -27,7 +27,8 @@ export function DenunciaForm() {
 const [Titulo, setTitulo] = useState('');
 const [Mensagem, setMensagem] = useState('');
 
-  const enviarDados = async () => {
+  const enviarDados = async (evnt: React.FormEvent<HTMLFormElement>) => {
+    evnt.preventDefault();
     const endpoint = '/denuncia'; // Endpoint no backend (exemplo: "/login")
     const dados = {
       titulo : Titulo,
@@ -37,6 +38,7 @@ const [Mensagem, setMensagem] = useState('');
     try {
       // Chamada para a função `post`
       const resposta = await post(endpoint, dados);
+      alert('Dados enviados com sucesso');
       console.log('Dados enviados com sucesso:', resposta);
     } catch (erro) {
       console.error('Erro ao enviar os dados:', erro);
@@ -56,7 +58,7 @@ const [Mensagem, setMensagem] = useState('');
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="flex justify-center items-center flex-col space-y-2">
+        <form className="flex justify-center items-center flex-col space-y-2" onSubmit={enviarDados}>
         <textarea
             className="bg-white w-full  px-2 border rounded resize-none"
             id="fname"
@@ -77,7 +79,7 @@ const [Mensagem, setMensagem] = useState('');
             required
           ></textarea>
 
-          <Button className=" w-1/2 " onClick={enviarDados}>Enviar</Button>
+          <Button className=" w-1/2 " type="submit">Enviar</Button>
         </form>
       </CardContent>
     </Card>

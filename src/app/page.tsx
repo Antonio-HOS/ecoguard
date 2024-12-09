@@ -21,6 +21,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [dadosTotais, setDadosTotais] = useState<any[]>([]);
+
   useEffect(() => {
     // Função para carregar os produtos
     const fetchProdutos = async () => {
@@ -28,19 +30,17 @@ export default function Home() {
         const token = "seu-token-aqui"; // Caso seja necessário um token de autenticação
         const dataAgua = await get("/aguas", token); // Faz a requisição GET
         setDadosApiAgua(dataAgua.aguas); // Atualiza o estado com os dados da resposta
-
         const dataSolo = await get("/solos", token); // Faz a requisição GET
         setDadosApiSolo(dataSolo.solos); // Atualiza o estado com os dados da resposta
-
         const dataAr = await get("/ares", token); // Faz a requisição GET
         setDadosApiAr(dataAr.ares); // Atualiza o estado com os dados da resposta
 
-        console.log("Agua");
-        console.log(dataAgua.aguas);
-        console.log("solo");
-        console.log(dataSolo.solos);
-        console.log("ares");
-        console.log(dataAr.ares);
+        setDadosTotais((prevItems) => [...prevItems, ...dataAgua.aguas]);
+        setDadosTotais((prevItems) => [...prevItems, ...dataSolo.solos]);
+        setDadosTotais((prevItems) => [...prevItems, ...dataAr.ares]);
+
+        console.log("Todos os dados");
+        console.log(dadosTotais);
       } catch (err) {
         setError("Erro ao carregar os produtos");
         console.error(err);
@@ -151,7 +151,7 @@ export default function Home() {
       </section>
       <section className="flex justify-center ml-20 space-x-11 mt-5">
         <div className="w-[55%]">
-          <ChartData />
+          <ChartData dado1={dadosTotais}/>
         </div>
         <DenunciaForm />
       </section>

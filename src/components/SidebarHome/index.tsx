@@ -171,7 +171,7 @@ export default function Sidebar() {
         <div className="w-80 h-32 flex justify-center items-center absolute rounded-tr-3xl rounded-br-3xl border-[2px] border-l-0 bg-white border-[#d2d2d2]  left-full top-2/3 translate-x--1/2 translate-y--1/2 " onMouseLeave={()=>setCompartilhar(false)}>
           <X size={25} onClick={()=>setCompartilhar(false)} className="absolute top-2 right-2"/>
           <Button variant={"outline"} size={"lg"}>
-            Gerar pdf
+            Gerar pdf(Em breve!)
             <FileText size={20} />
           </Button>
         </div>

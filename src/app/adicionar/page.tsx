@@ -9,12 +9,13 @@ import { DenunciaForm } from "@/components/DenunciaForm";
 import { useEffect, useState } from "react";
 import { CardPages } from "@/components/cardPages";
 import { CloudUpload } from "lucide-react";
+import { post } from "../../../services/api";
 
 export default function Adicionar() {
   const [formData, setFormData] = useState({
     localizacao: "ilheus-ba",
     tipo: "ica",
-    data_coleta: "",
+    area: "",
     valor: "",
     regiao: "",
     comentario: "",
@@ -24,7 +25,7 @@ export default function Adicionar() {
   interface FormData {
     localizacao: string;
     tipo: string;
-    data_coleta: string;
+    area: string;
     valor: string;
     regiao: string;
     comentario: string;
@@ -56,24 +57,53 @@ export default function Adicionar() {
     // Aqui você pode enviar os dados para o backend
   };
 
+  const enviarDados = async (evnt: React.FormEvent<HTMLFormElement>) => {
+    evnt.preventDefault();
+    const endpoint = `/${formData.area}`; // Endpoint no backend (exemplo: "/login")
+    const dados = {
+    regiao: formData.regiao,
+    cidade: formData.localizacao,
+    tipo : formData.tipo,
+    dado : formData.valor,
+    comentario : formData.comentario,
+    };
+  
+    try {
+      // Chamada para a função `post`
+      const resposta = await post(endpoint, dados);
+      alert('Dados enviados com sucesso');
+      console.log('Dados enviados com sucesso:', resposta);
+    } catch (erro) {
+      console.error('Erro ao enviar os dados:', erro);
+    }finally{
+      setFormData({
+        localizacao: "ilheus-ba",
+        tipo: "ica",
+        area: "",
+        valor: "",
+        regiao: "",
+        comentario: "",
+      });
+    }
+  };
+
+
   return (
     <div className="">
       <SidebarHome />
       <div className="flex justify-center h-screen items-center">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={enviarDados}
           className="bg-white p-6 shadow-lg w-[60vw] rounded-3xl"
         >
-
           <div className="flex justify-center space-x-3">
-          <span className="text-3xl font-bold mb-6 text-center">
-            Envie os dados
-          </span>{" "}
-          <span className="text-blue-600">
-            <CloudUpload size={36} />
-          </span>
+            <span className="text-3xl font-bold mb-6 text-center">
+              Envie os dados
+            </span>{" "}
+            <span className="text-blue-600">
+              <CloudUpload size={36} />
+            </span>
           </div>
-
 
           <div className="flex justify-evenly ">
             {/*aqui */}
@@ -116,23 +146,27 @@ export default function Adicionar() {
                   <option value="ph">pH</option>
                   <option value="temperatura">Temperatura</option>
                 </select>
-              </div>
 
+
+              </div>
               <div className="mb-4">
                 <label
-                  htmlFor="data_coleta"
+                  htmlFor="Área"
                   className="block text-lg font-medium text-gray-700"
                 >
-                  Data da Coleta:
+                  Área:
                 </label>
-                <input
-                  type="date"
-                  id="data_coleta"
-                  name="data_coleta"
-                  value={formData.data_coleta}
+                <select
+                  id="area"
+                  name="area"
+                  value={formData.area}
                   onChange={handleChange}
                   className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
-                />
+                >
+                  <option value="aguas">Agua</option>
+                  <option value="ares">Ar</option>
+                  <option value="solos">Solo</option>
+                </select>
               </div>
 
               <div className="mb-4">

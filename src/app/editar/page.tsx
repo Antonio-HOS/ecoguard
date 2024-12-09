@@ -9,23 +9,26 @@ import { DenunciaForm } from "@/components/DenunciaForm";
 import { useEffect, useState } from "react";
 import { CardPages } from "@/components/cardPages";
 import { CloudUpload } from "lucide-react";
+import { put } from "../../../services/api";
 
 export default function Editar() {
   const [formData, setFormData] = useState({
     localizacao: "ilheus-ba",
     id: "",
-    data_coleta: "",
-    valor: "",
+    area: "",
+    valor: "aguas",
     regiao: "",
     comentario: "",
+    tipo: "ica",
   });
 
   // Função para lidar com mudanças nos campos
   interface FormData {
     localizacao: string;
     id: string;
-    data_coleta: string;
+    area: string;
     valor: string;
+    tipo: string;
     regiao: string;
     comentario: string;
   }
@@ -50,10 +53,36 @@ export default function Editar() {
     preventDefault: () => void;
   }
 
-  const handleSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-    console.log("Dados enviados:", formData);
-    // Aqui você pode enviar os dados para o backend
+ 
+
+  const enviarDados = async (evnt: React.FormEvent<HTMLFormElement>) => {
+    evnt.preventDefault();
+    const endpoint = `/${formData.area}/${formData.id}`; // Endpoint no backend (exemplo: "/login")
+    const dados = {
+      regiao: formData.regiao,
+      cidade: formData.localizacao,
+      dado: formData.valor,
+      comentario: formData.comentario,
+      tipo: formData.tipo,
+    };
+
+    try {
+      // Chamada para a função `post`
+      const resposta = await put(endpoint, dados);
+      alert("Dados enviados com sucesso");
+      setFormData({
+        localizacao: "ilheus-ba",
+        id: "",
+        area: "",
+        valor: "",
+        regiao: "",
+        comentario: "",
+        tipo: "",
+      });
+      console.log("Dados enviados com sucesso:", resposta);
+    } catch (erro) {
+      console.error("Erro ao enviar os dados:", erro);
+    } 
   };
 
   return (
@@ -61,7 +90,7 @@ export default function Editar() {
       <SidebarHome />
       <div className="flex justify-center h-screen items-center">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={enviarDados}
           className="bg-white p-6 shadow-lg w-[60vw] rounded-3xl"
         >
           <div className="flex justify-center space-x-3">
@@ -76,8 +105,7 @@ export default function Editar() {
           <div className="flex justify-evenly ">
             {/*aqui */}
             <div className="w-[40%]">
-              
-            <div className="mb-4">
+              <div className="mb-4">
                 <label
                   htmlFor="id"
                   className="block text-lg font-medium text-gray-700"
@@ -113,23 +141,46 @@ export default function Editar() {
                 </select>
               </div>
 
-             
+              <div className="mb-4">
+                <label
+                  htmlFor="Área"
+                  className="block text-lg font-medium text-gray-700"
+                >
+                  Área:
+                </label>
+                <select
+                  id="area"
+                  name="area"
+                  value={formData.area}
+                  onChange={handleChange}
+                  className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
+                >
+                  <option value="aguas">Agua</option>
+                  <option value="ares">Ar</option>
+                  <option value="solos">Solo</option>
+                </select>
+              </div>
 
               <div className="mb-4">
                 <label
-                  htmlFor="data_coleta"
+                  htmlFor="tipo"
                   className="block text-lg font-medium text-gray-700"
                 >
-                  Data da Coleta:
+                  Tipo:
                 </label>
-                <input
-                  type="date"
-                  id="data_coleta"
-                  name="data_coleta"
-                  value={formData.data_coleta}
+                <select
+                  id="tipo"
+                  name="tipo"
+                  value={formData.tipo}
                   onChange={handleChange}
                   className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
-                />
+                >
+                  <option value="ica">Ica</option>
+                  <option value="ph">pH</option>
+                  <option value="temperatura">Temperatura</option>
+                </select>
+
+
               </div>
 
               <div className="mb-4">
